@@ -55,9 +55,7 @@ function onClick(): void {
     :class="
       cn(
         'cursor-pointer rounded-lg border border-border/70 bg-card p-3.5 shadow-sm',
-
         'transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card',
-
         'active:scale-[0.99]',
       )
     "
@@ -74,10 +72,9 @@ function onClick(): void {
     <div
       v-for="f in secondaryFields"
       :key="f.id"
-      :class="['mt-1 flex justify-between gap-2 text-[12.5px]', f.highlighted ? 'font-medium text-foreground' : '']"
+      :class="['mt-1 flex justify-start gap-2 text-[12.5px]', f.highlighted ? 'font-medium text-foreground' : '']"
     >
-      <span class="text-muted-foreground">{{ f.label }}</span>
-
+      <span class="text-muted-foreground">{{ f.label }}:</span>
       <span class="text-right font-medium">{{ display(record.values[f.key]) }}</span>
     </div>
     <div class="mt-2.5 text-[11px] font-medium text-muted-foreground/80">#{{ shortId }}</div>
