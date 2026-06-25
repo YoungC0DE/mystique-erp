@@ -20,6 +20,13 @@ import PageHeader from '@/components/layout/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icon } from '@/components/ui/icon';
@@ -262,6 +269,10 @@ async function save(): Promise<void> {
   }
 }
 
+function openModule(mod: Module): void {
+  router.push({ name: 'module', params: { slug: mod.slug } });
+}
+
 async function remove(mod: Module): Promise<void> {
   if (!confirm(t('modulesAdmin.confirmRemove', { name: mod.name }))) return;
   try {
@@ -312,52 +323,65 @@ onMounted(() => {
       <Card
         v-for="mod in modules"
         :key="mod.id"
-        class="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover"
+        class="cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover"
+        @click="openModule(mod)"
       >
-        <CardContent class="flex flex-col gap-2.5 p-5">
-          <div class="flex items-center justify-between">
-            <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
+        <CardContent class="flex min-h-[168px] flex-col gap-2.5 p-5">
+          <div class="flex items-start justify-between gap-2">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
               <Icon :name="mod.icon ?? ''" :size="22" />
             </span>
-            <div class="flex gap-1.5">
-              <Badge :variant="mod.is_integrated ? 'default' : 'muted'">
-                {{ mod.is_integrated ? t('modulesAdmin.integrated') : t('modulesAdmin.notIntegrated') }}
-              </Badge>
-              <Badge :variant="mod.status === 'active' ? 'success' : 'muted'">
-                {{ mod.status === 'active' ? t('modulesAdmin.active') : t('modulesAdmin.inactive') }}
-              </Badge>
+            <div class="flex min-w-0 items-start gap-1">
+              <div class="flex flex-wrap justify-end gap-1.5">
+                <Badge :variant="mod.is_integrated ? 'default' : 'muted'">
+                  {{ mod.is_integrated ? t('modulesAdmin.integrated') : t('modulesAdmin.notIntegrated') }}
+                </Badge>
+                <Badge :variant="mod.status === 'active' ? 'success' : 'muted'">
+                  {{ mod.status === 'active' ? t('modulesAdmin.active') : t('modulesAdmin.inactive') }}
+                </Badge>
+              </div>
+              <DropdownMenu v-if="auth.can('update') || auth.can('delete')">
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8 shrink-0 text-muted-foreground"
+                    :aria-label="t('modulesAdmin.openActionsMenu')"
+                    @click.stop
+                  >
+                    <Icon name="ellipsis-vertical" :size="18" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="w-44" @click.stop>
+                  <DropdownMenuItem
+                    v-if="auth.can('update')"
+                    @select="router.push({ name: 'module-config', params: { slug: mod.slug } })"
+                  >
+                    <Icon name="settings" :size="16" class="mr-2 opacity-60" />
+                    {{ t('modulesAdmin.configure') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem v-if="auth.can('update')" @select="openEdit(mod)">
+                    <Icon name="pencil" :size="16" class="mr-2 opacity-60" />
+                    {{ t('common.edit') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator v-if="auth.can('update') && auth.can('delete')" />
+                  <DropdownMenuItem
+                    v-if="auth.can('delete')"
+                    class="text-destructive focus:text-destructive"
+                    @select="remove(mod)"
+                  >
+                    <Icon name="trash-2" :size="16" class="mr-2 opacity-60" />
+                    {{ t('common.delete') }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           <strong class="text-[15px] font-semibold tracking-tight">{{ mod.name }}</strong>
           <span class="text-sm text-muted-foreground">
             {{ t('modulesAdmin.fieldsCount', { count: mod.fields_count ?? 0 }) }} · {{ mod.slug }}
           </span>
-          <div class="mt-2.5 flex flex-wrap items-center gap-1.5">
-            <Button variant="secondary" size="sm" @click="router.push({ name: 'module', params: { slug: mod.slug } })">
-              {{ t('modulesAdmin.open') }}
-            </Button>
-            <Button
-              v-if="auth.can('update')"
-              variant="ghost"
-              size="sm"
-              @click="router.push({ name: 'module-config', params: { slug: mod.slug } })"
-            >
-              {{ t('modulesAdmin.configure') }}
-            </Button>
-            <span class="flex-1" />
-            <Button v-if="auth.can('update')" variant="ghost" size="sm" @click="openEdit(mod)">
-              {{ t('common.edit') }}
-            </Button>
-            <Button
-              v-if="auth.can('delete')"
-              variant="ghost"
-              size="sm"
-              class="text-danger hover:text-danger"
-              @click="remove(mod)"
-            >
-              {{ t('common.delete') }}
-            </Button>
-          </div>
+          <span class="mt-auto pt-1 text-xs text-muted-foreground">{{ t('modulesAdmin.clickToAccess') }}</span>
         </CardContent>
       </Card>
       <Card v-if="modules.length === 0" class="col-span-full">
