@@ -1,109 +1,100 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { ModuleField } from '@/types'
-import { Button } from '@/components/ui/button'
-import { Icon } from '@/components/ui/icon'
-import { Badge } from '@/components/ui/badge'
-import { fieldTypeLabel } from '@/constants/fieldTypes'
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { ModuleField } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Badge } from '@/components/ui/badge';
+import { fieldTypeLabel } from '@/constants/fieldTypes';
 
 const props = defineProps<{
-  fields: ModuleField[]
-  maxDisplayed?: number
-}>()
+  fields: ModuleField[];
+  maxDisplayed?: number;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:fields', value: ModuleField[]): void
-}>()
+  (e: 'update:fields', value: ModuleField[]): void;
+}>();
 
-const { t } = useI18n()
-const maxDisplayed = computed(() => props.maxDisplayed ?? 6)
+const { t } = useI18n();
+const maxDisplayed = computed(() => props.maxDisplayed ?? 6);
 
 const availableFields = computed(() =>
-  props.fields
-    .filter((f) => f.visible && !f.show_in_list)
-    .sort((a, b) => a.label.localeCompare(b.label)),
-)
+  props.fields.filter((f) => f.visible && !f.show_in_list).sort((a, b) => a.label.localeCompare(b.label)),
+);
 
 const displayedFields = computed(() =>
-  props.fields
-    .filter((f) => f.visible && f.show_in_list)
-    .sort((a, b) => a.order - b.order),
-)
+  props.fields.filter((f) => f.visible && f.show_in_list).sort((a, b) => a.order - b.order),
+);
 
-const dragKey = ref<string | null>(null)
+const dragKey = ref<string | null>(null);
 
 function patchField(id: string, patch: Partial<ModuleField>): void {
   emit(
     'update:fields',
     props.fields.map((f) => (f.id === id ? { ...f, ...patch } : f)),
-  )
+  );
 }
 
 function addToDisplayed(field: ModuleField): void {
-  if (displayedFields.value.length >= maxDisplayed.value) return
-  const nextOrder =
-    displayedFields.value.length > 0
-      ? Math.max(...displayedFields.value.map((f) => f.order)) + 1
-      : 0
-  patchField(field.id, { show_in_list: true, order: nextOrder })
+  if (displayedFields.value.length >= maxDisplayed.value) return;
+  const nextOrder = displayedFields.value.length > 0 ? Math.max(...displayedFields.value.map((f) => f.order)) + 1 : 0;
+  patchField(field.id, { show_in_list: true, order: nextOrder });
 }
 
 function removeFromDisplayed(field: ModuleField): void {
-  patchField(field.id, { show_in_list: false, highlighted: false })
+  patchField(field.id, { show_in_list: false, highlighted: false });
 }
 
 function moveDisplayed(index: number, dir: -1 | 1): void {
-  const list = displayedFields.value
-  const target = index + dir
-  if (target < 0 || target >= list.length) return
-  const reordered = [...list]
-  ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-  const updates = new Map(reordered.map((f, i) => [f.id, i]))
+  const list = displayedFields.value;
+  const target = index + dir;
+  if (target < 0 || target >= list.length) return;
+  const reordered = [...list];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+  const updates = new Map(reordered.map((f, i) => [f.id, i]));
   emit(
     'update:fields',
-    props.fields.map((f) =>
-      updates.has(f.id) ? { ...f, order: updates.get(f.id)! } : f,
-    ),
-  )
+    props.fields.map((f) => (updates.has(f.id) ? { ...f, order: updates.get(f.id)! } : f)),
+  );
 }
 
 function toggleHighlight(field: ModuleField): void {
-  patchField(field.id, { highlighted: !field.highlighted })
+  patchField(field.id, { highlighted: !field.highlighted });
 }
 
 function onDragStart(key: string): void {
-  dragKey.value = key
+  dragKey.value = key;
 }
 
 function onDragEnd(): void {
-  dragKey.value = null
+  dragKey.value = null;
 }
 
 function onDropDisplayed(index: number): void {
-  if (!dragKey.value) return
-  const field = props.fields.find((f) => f.key === dragKey.value)
-  if (!field) return
+  if (!dragKey.value) return;
+  const field = props.fields.find((f) => f.key === dragKey.value);
+  if (!field) return;
 
   if (!field.show_in_list) {
-    if (displayedFields.value.length >= maxDisplayed.value) return
-    addToDisplayed(field)
+    if (displayedFields.value.length >= maxDisplayed.value) return;
+    addToDisplayed(field);
   }
 
-  const list = [...displayedFields.value]
-  const fromIndex = list.findIndex((f) => f.key === dragKey.value)
-  if (fromIndex === -1) return
-  const [item] = list.splice(fromIndex, 1)
-  list.splice(index, 0, item)
-  const updates = new Map(list.map((f, i) => [f.id, i]))
+  const list = [...displayedFields.value];
+  const fromIndex = list.findIndex((f) => f.key === dragKey.value);
+  if (fromIndex === -1) return;
+  const [item] = list.splice(fromIndex, 1);
+  list.splice(index, 0, item);
+  const updates = new Map(list.map((f, i) => [f.id, i]));
   emit(
     'update:fields',
     props.fields.map((f) => {
-      if (updates.has(f.id)) return { ...f, show_in_list: true, order: updates.get(f.id)! }
-      return f
+      if (updates.has(f.id)) return { ...f, show_in_list: true, order: updates.get(f.id)! };
+      return f;
     }),
-  )
-  dragKey.value = null
+  );
+  dragKey.value = null;
 }
 </script>
 
@@ -182,7 +173,13 @@ function onDropDisplayed(index: number): void {
             >
               <Icon name="star" :size="18" />
             </Button>
-            <Button variant="ghost" size="icon" class="h-8 w-8" :disabled="index === 0" @click="moveDisplayed(index, -1)">
+            <Button
+              variant="ghost"
+              size="icon"
+              class="h-8 w-8"
+              :disabled="index === 0"
+              @click="moveDisplayed(index, -1)"
+            >
               <Icon name="chevron-up" :size="18" />
             </Button>
             <Button

@@ -66,126 +66,34 @@ export default {
     tablePlaceholder: 'ex.: pedidos',
   },
   login: {
-    subtitle: 'Entre para acessar sua plataforma',
+    title: 'Mystique CRM',
+    subtitle: 'Entre para acessar sua instância interna',
     email: 'E-mail',
     password: 'Senha',
+    emailPlaceholder: "voce{'@'}empresa.com",
+    passwordPlaceholder: '••••••••',
     submit: 'Entrar',
+    submitting: 'Entrando...',
+    forgotPassword: 'Esqueci minha senha',
+    forgotPasswordHint: 'Entre em contato com o administrador da instância.',
     error: 'Não foi possível entrar. Verifique suas credenciais.',
-    noAccount: 'Não tem conta?',
-    registerLink: 'Registrar',
-  },
-  register: {
-    subtitle: 'Crie sua conta para acessar a plataforma',
-    name: 'Nome',
-    namePlaceholder: 'Seu nome',
-    email: 'E-mail',
-    password: 'Senha',
-    submit: 'Criar conta',
-    error: 'Não foi possível criar a conta. Verifique os dados informados.',
-    hasAccount: 'Já tem conta?',
-    loginLink: 'Entrar',
-  },
-  publicNav: {
-    home: 'Home',
-    documentation: 'Documentação',
-    signIn: 'Entrar',
-    register: 'Registrar',
-    goToApp: 'Ir para o app',
-    footer: 'Mystique CRM — open-source, self-hosted.',
-  },
-  home: {
-    badge: 'Open-source · Self-hosted',
-    title: 'CRM modular com Kanban e integração nativa via banco',
-    subtitle:
-      'Implante sua instância, conecte o banco do cliente e gerencie processos com boards em tempo real. Dados operacionais lidos direto da tabela externa; mudança de etapa via callback HTTP.',
-    ctaDocs: 'Ver documentação',
-    ctaSignIn: 'Entrar',
-    flowTitle: 'Como funciona',
-    flow: {
-      install: {
-        title: 'Instalar',
-        description: 'Suba a stack com Docker Compose na sua infraestrutura.',
-      },
-      connection: {
-        title: 'Conexão',
-        description: 'Cadastre host, credenciais e tabela do banco externo.',
-      },
-      module: {
-        title: 'Módulo',
-        description: 'Escolha colunas, status do Kanban e URL de callback.',
-      },
-      board: {
-        title: 'Board',
-        description: 'Cards somente leitura, alimentados pelo SELECT na tabela.',
-      },
-      callback: {
-        title: 'Callback',
-        description: 'Ao mover um card, o CRM notifica a API do cliente.',
-      },
-    },
-    features: {
-      oss: {
-        title: 'Open-source',
-        description: 'Uma instalação por organização, sem multi-tenant centralizado nem planos pagos.',
-      },
-      integration: {
-        title: 'Integração nativa',
-        description: 'Leitura direta do banco externo — sem API de integração de dados.',
-      },
-      kanban: {
-        title: 'Kanban em tempo real',
-        description: 'Status configuráveis, drag-and-drop de etapa e atualização via Reverb/Echo.',
-      },
-    },
-  },
-  documentation: {
-    title: 'Documentação',
-    subtitle: 'Guia rápido para instalar, configurar e integrar o Mystique CRM.',
-    repoHint: 'Guias completos na pasta docs/ do repositório: instalação, módulos, integração e callback.',
-    sections: {
-      install: {
-        title: 'Instalação (Docker)',
-        description: 'Requisitos e passos para subir a instância local ou em produção.',
-        items: [
-          'Clone o repositório e copie backend/.env.example para backend/.env',
-          'Execute docker compose up -d e rode migrations + passport:install',
-          'Configure PASSPORT_PASSWORD_CLIENT_ID/SECRET com app:ensure-passport-password-client',
-        ],
-      },
-      admin: {
-        title: 'Primeiro Admin',
-        description: 'Bootstrap do administrador da instalação (single-tenant).',
-        items: [
-          'Produção: php artisan app:create-admin (recomendado com REGISTRATION_ENABLED=false)',
-          'Alternativa: habilite REGISTRATION_ENABLED=true — o primeiro registrado vira Admin',
-        ],
-      },
-      connection: {
-        title: 'Conexão de banco',
-        description: 'Cadastro de credenciais do banco externo do cliente.',
-        items: [
-          'Informe host, porta, database, usuário, senha e nome da tabela',
-          'Valide a conectividade antes de salvar — senha armazenada criptografada',
-          'Pode haver várias conexões; cada módulo usa uma conexão',
-        ],
-      },
-      module: {
-        title: 'Módulo e colunas',
-        description: 'Configuração do board integrado.',
-        items: [
-          'Associe uma conexão e selecione colunas da tabela para exibir nos cards',
-          'Defina a coluna de status/etapa mapeada ao Kanban',
-          'Status padrão: Inputar, Em Andamento, Aprovados, Reprovados',
-        ],
-      },
-      callback: {
-        title: 'Callback de etapa',
-        description: 'Contrato HTTP ao mover um card entre colunas.',
-        items: [
-          'POST para a callback_url do módulo com record_id, status e previous_status',
-          'O sistema do cliente persiste a etapa — o CRM não altera campos de negócio',
-          'Falha no callback reverte o movimento no board e gera log de auditoria',
-        ],
+    hero: {
+      eyebrow: 'CRM interno · Self-hosted',
+      title: 'Organize processos com clareza',
+      subtitle: 'Módulos, permissões e relatórios conectados aos dados do seu negócio.',
+      dashboard: 'Visão geral',
+      dashboardHint: 'Acompanhe módulos e equipe em tempo real',
+      live: 'Tempo real',
+      modules: 'Módulos',
+      users: 'Usuários',
+      permissions: 'Permissões',
+      reports: 'Relatórios',
+      kanban: 'Board Kanban',
+      active: 'ativos',
+      columns: {
+        input: 'Inputar',
+        progress: 'Em andamento',
+        done: 'Concluídos',
       },
     },
   },
@@ -276,14 +184,16 @@ export default {
     connection: 'Conexão de banco',
     connectionPlaceholder: 'Selecione uma conexão',
     columns: 'Colunas exibidas no card',
-    columnsHint: 'Marque quais colunas da tabela aparecem nos cards do Kanban. A coluna de status é incluída automaticamente.',
+    columnsHint:
+      'Marque quais colunas da tabela aparecem nos cards do Kanban. A coluna de status é incluída automaticamente.',
     columnsSelectedCount: '{selected} de {total} colunas selecionadas',
     selectAllColumns: 'Selecionar todas',
     clearColumns: 'Limpar seleção',
     columnsLoading: 'Carregando colunas da tabela...',
     columnsEmpty: 'Nenhuma coluna encontrada na tabela da conexão.',
     statusColumn: 'Coluna de status na tabela',
-    statusColumnHint: 'Escolha qual coluna da sua tabela externa guarda a etapa do registro (ex.: status, etapa). O CRM usa esse campo para montar as colunas do Kanban.',
+    statusColumnHint:
+      'Escolha qual coluna da sua tabela externa guarda a etapa do registro (ex.: status, etapa). O CRM usa esse campo para montar as colunas do Kanban.',
     statusColumnBadge: 'Status',
     statusColumnSelected: 'Coluna selecionada: {column}. Ela será incluída automaticamente nos cards.',
     statusColumnPlaceholder: 'Selecione a coluna de etapa...',
@@ -445,4 +355,4 @@ export default {
     requiredError: 'Campo obrigatório.',
     selectPlaceholder: 'Selecione...',
   },
-}
+};

@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import PageContainer from '@/components/layout/PageContainer.vue'
-import PageHeader from '@/components/layout/PageHeader.vue'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useAuthStore } from '@/stores/auth'
-import { profileService } from '@/services/profile.service'
-import { apiErrorMessage } from '@/services/http'
-import { useToast } from '@/composables/useToast'
-import { setLocale, SUPPORTED_LOCALES, type AppLocale } from '@/i18n'
-import { controlClass } from '@/lib/inputStyles'
+import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import PageContainer from '@/components/layout/PageContainer.vue';
+import PageHeader from '@/components/layout/PageHeader.vue';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuthStore } from '@/stores/auth';
+import { profileService } from '@/services/profile.service';
+import { apiErrorMessage } from '@/services/http';
+import { useToast } from '@/composables/useToast';
+import { setLocale, SUPPORTED_LOCALES, type AppLocale } from '@/i18n';
+import { controlClass } from '@/lib/inputStyles';
 
-const { t } = useI18n()
-const auth = useAuthStore()
-const toast = useToast()
+const { t } = useI18n();
+const auth = useAuthStore();
+const toast = useToast();
 
 const localeLabels: Record<AppLocale, string> = {
   'pt-BR': 'Português (Brasil)',
   en: 'English',
-}
+};
 
 const account = reactive({
   name: auth.user?.name ?? '',
   email: auth.user?.email ?? '',
   locale: (auth.user?.locale ?? 'pt-BR') as AppLocale,
-})
+});
 
 const passwords = reactive({
   current_password: '',
   password: '',
   password_confirmation: '',
-})
+});
 
 function onLocaleChange(): void {
-  setLocale(account.locale)
+  setLocale(account.locale);
 }
 
 async function saveAccount(): Promise<void> {
@@ -45,27 +45,27 @@ async function saveAccount(): Promise<void> {
       name: account.name,
       email: account.email,
       locale: account.locale,
-    })
-    auth.updateUser(user)
-    toast.success(t('profile.saved'))
+    });
+    auth.updateUser(user);
+    toast.success(t('profile.saved'));
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 async function savePassword(): Promise<void> {
   if (passwords.password !== passwords.password_confirmation) {
-    toast.error(t('profile.passwordMismatch'))
-    return
+    toast.error(t('profile.passwordMismatch'));
+    return;
   }
   try {
-    await profileService.updatePassword({ ...passwords })
-    passwords.current_password = ''
-    passwords.password = ''
-    passwords.password_confirmation = ''
-    toast.success(t('profile.passwordChanged'))
+    await profileService.updatePassword({ ...passwords });
+    passwords.current_password = '';
+    passwords.password = '';
+    passwords.password_confirmation = '';
+    toast.success(t('profile.passwordChanged'));
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 </script>
@@ -116,10 +116,7 @@ async function savePassword(): Promise<void> {
               <Label>{{ t('profile.confirmPassword') }}</Label>
               <Input v-model="passwords.password_confirmation" type="password" autocomplete="new-password" />
             </div>
-            <Button
-              type="submit"
-              :disabled="!passwords.current_password || !passwords.password"
-            >
+            <Button type="submit" :disabled="!passwords.current_password || !passwords.password">
               {{ t('profile.changePassword') }}
             </Button>
           </form>

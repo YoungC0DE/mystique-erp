@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
+import type { HTMLAttributes } from 'vue';
 import {
   DropdownMenuContent,
   DropdownMenuPortal,
   type DropdownMenuContentEmits,
   type DropdownMenuContentProps,
   useForwardPropsEmits,
-} from 'reka-ui'
-import { cn } from '@/lib/utils'
+} from 'reka-ui';
+import { cn } from '@/lib/utils';
 
-const props = withDefaults(
-  defineProps<DropdownMenuContentProps & { class?: HTMLAttributes['class'] }>(),
-  { sideOffset: 4 },
-)
-const emits = defineEmits<DropdownMenuContentEmits>()
+const props = withDefaults(defineProps<DropdownMenuContentProps & { class?: HTMLAttributes['class'] }>(), {
+  sideOffset: 4,
+});
+const emits = defineEmits<DropdownMenuContentEmits>();
 
-const forwarded = useForwardPropsEmits(props, emits)
+const forwarded = useForwardPropsEmits(props, emits);
 </script>
 
 <template>

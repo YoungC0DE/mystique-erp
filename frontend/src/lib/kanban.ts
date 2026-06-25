@@ -11,8 +11,8 @@ export const KANBAN_STATUS_ACCENT: Record<string, string> = {
   processando: '#f59e0b',
   finalizado: '#22c55e',
   reprovado: '#ef4444',
-}
+};
 
 export function kanbanStatusAccent(slug: string, fallback?: string): string {
-  return KANBAN_STATUS_ACCENT[slug] ?? fallback ?? 'var(--primary)'
+  return KANBAN_STATUS_ACCENT[slug] ?? fallback ?? 'var(--primary)';
 }

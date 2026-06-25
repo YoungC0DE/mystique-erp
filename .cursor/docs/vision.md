@@ -55,11 +55,12 @@ Módulos **sem** `connection_id` ainda usam `module_records` + `record_values` (
 O fluxo principal do produto é integração externa; o EAV permanece para compatibilidade
 e para o módulo Pedidos antes da configuração.
 
-## Área pública (não autenticada)
+## Entrada da aplicação
 
-* **Home** (`/`) — resumo do projeto
-* **Documentação** (`/documentacao`) — guias de instalação e integração
-* Header com **Entrar** (`/entrar`) e **Registrar** (`/registrar`, condicionado a env)
+* **`/`** — tela de login (única rota pública do frontend)
+* Aliases: `/entrar`, `/login` redirecionam para `/`
+* Setup e documentação operacional ficam no **README** do repositório
+* Admin bootstrap via `php artisan app:create-admin` (recomendado em produção)
 
 ## Área autenticada
 
@@ -81,9 +82,7 @@ e layout de campos em **`/m/:slug/config`**.
 ## Conta e personalização
 
 * Internacionalização pt-BR / en (`users.locale`, default `pt-BR`)
-* Registro controlado por `REGISTRATION_ENABLED`
-* Primeiro usuário registrado vira Admin automaticamente
-* Admin bootstrap via `php artisan app:create-admin`
+* Registro via API ainda existe (`REGISTRATION_ENABLED`), mas **sem UI pública** — preferir `app:create-admin`
 * Ícones: **Lucide** (componente `Icon`, nomes kebab-case)
 
 ## Futuro (fora do escopo atual)

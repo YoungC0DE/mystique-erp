@@ -66,126 +66,34 @@ export default {
     tablePlaceholder: 'e.g. orders',
   },
   login: {
-    subtitle: 'Sign in to access your platform',
+    title: 'Mystique CRM',
+    subtitle: 'Sign in to access your internal instance',
     email: 'Email',
     password: 'Password',
+    emailPlaceholder: "you{'@'}company.com",
+    passwordPlaceholder: '••••••••',
     submit: 'Sign in',
+    submitting: 'Signing in...',
+    forgotPassword: 'Forgot password?',
+    forgotPasswordHint: 'Contact your instance administrator.',
     error: 'Unable to sign in. Please check your credentials.',
-    noAccount: "Don't have an account?",
-    registerLink: 'Register',
-  },
-  register: {
-    subtitle: 'Create your account to access the platform',
-    name: 'Name',
-    namePlaceholder: 'Your name',
-    email: 'Email',
-    password: 'Password',
-    submit: 'Create account',
-    error: 'Unable to create the account. Please check the information provided.',
-    hasAccount: 'Already have an account?',
-    loginLink: 'Sign in',
-  },
-  publicNav: {
-    home: 'Home',
-    documentation: 'Documentation',
-    signIn: 'Sign in',
-    register: 'Register',
-    goToApp: 'Go to app',
-    footer: 'Mystique CRM — open-source, self-hosted.',
-  },
-  home: {
-    badge: 'Open-source · Self-hosted',
-    title: 'Modular CRM with Kanban and native database integration',
-    subtitle:
-      'Deploy your instance, connect the client database, and manage processes with real-time boards. Operational data is read directly from external tables; stage changes via HTTP callback.',
-    ctaDocs: 'View documentation',
-    ctaSignIn: 'Sign in',
-    flowTitle: 'How it works',
-    flow: {
-      install: {
-        title: 'Install',
-        description: 'Run the stack with Docker Compose on your infrastructure.',
-      },
-      connection: {
-        title: 'Connection',
-        description: 'Register host, credentials, and table from the external database.',
-      },
-      module: {
-        title: 'Module',
-        description: 'Choose columns, Kanban statuses, and callback URL.',
-      },
-      board: {
-        title: 'Board',
-        description: 'Read-only cards fed by SELECT on the external table.',
-      },
-      callback: {
-        title: 'Callback',
-        description: 'When moving a card, the CRM notifies the client API.',
-      },
-    },
-    features: {
-      oss: {
-        title: 'Open-source',
-        description: 'One installation per organization — no centralized multi-tenant or paid plans.',
-      },
-      integration: {
-        title: 'Native integration',
-        description: 'Direct read from external database — no data integration API.',
-      },
-      kanban: {
-        title: 'Real-time Kanban',
-        description: 'Configurable statuses, stage drag-and-drop, and updates via Reverb/Echo.',
-      },
-    },
-  },
-  documentation: {
-    title: 'Documentation',
-    subtitle: 'Quick guide to install, configure, and integrate Mystique CRM.',
-    repoHint: 'Full guides in the repository docs/ folder: installation, modules, integration, and callback.',
-    sections: {
-      install: {
-        title: 'Installation (Docker)',
-        description: 'Requirements and steps to run locally or in production.',
-        items: [
-          'Clone the repository and copy backend/.env.example to backend/.env',
-          'Run docker compose up -d and execute migrations + passport:install',
-          'Set PASSPORT_PASSWORD_CLIENT_ID/SECRET with app:ensure-passport-password-client',
-        ],
-      },
-      admin: {
-        title: 'First Admin',
-        description: 'Bootstrap the installation administrator (single-tenant).',
-        items: [
-          'Production: php artisan app:create-admin (recommended with REGISTRATION_ENABLED=false)',
-          'Alternative: enable REGISTRATION_ENABLED=true — the first registrant becomes Admin',
-        ],
-      },
-      connection: {
-        title: 'Database connection',
-        description: 'Register credentials for the client external database.',
-        items: [
-          'Provide host, port, database, username, password, and table name',
-          'Validate connectivity before saving — password stored encrypted',
-          'Multiple connections allowed; each module uses one connection',
-        ],
-      },
-      module: {
-        title: 'Module and columns',
-        description: 'Integrated board configuration.',
-        items: [
-          'Link a connection and select table columns to display on cards',
-          'Define the status/stage column mapped to the Kanban',
-          'Default statuses: Inputar, Em Andamento, Aprovados, Reprovados',
-        ],
-      },
-      callback: {
-        title: 'Stage callback',
-        description: 'HTTP contract when moving a card between columns.',
-        items: [
-          'POST to the module callback_url with record_id, status, and previous_status',
-          'The client system persists the stage — the CRM does not mutate business fields',
-          'Callback failure reverts the board move and writes an audit log',
-        ],
+    hero: {
+      eyebrow: 'Internal CRM · Self-hosted',
+      title: 'Organize processes with clarity',
+      subtitle: 'Modules, permissions, and reports connected to your business data.',
+      dashboard: 'Overview',
+      dashboardHint: 'Track modules and team activity in real time',
+      live: 'Live',
+      modules: 'Modules',
+      users: 'Users',
+      permissions: 'Permissions',
+      reports: 'Reports',
+      kanban: 'Kanban board',
+      active: 'active',
+      columns: {
+        input: 'Intake',
+        progress: 'In progress',
+        done: 'Completed',
       },
     },
   },
@@ -283,7 +191,8 @@ export default {
     columnsLoading: 'Loading table columns...',
     columnsEmpty: 'No columns found in the connection table.',
     statusColumn: 'Status column in table',
-    statusColumnHint: 'Pick which column in your external table stores the record stage (e.g. status, stage). The CRM uses it to build Kanban columns.',
+    statusColumnHint:
+      'Pick which column in your external table stores the record stage (e.g. status, stage). The CRM uses it to build Kanban columns.',
     statusColumnBadge: 'Status',
     statusColumnSelected: 'Selected column: {column}. It will be included on cards automatically.',
     statusColumnPlaceholder: 'Select the stage column...',
@@ -445,4 +354,4 @@ export default {
     requiredError: 'Required field.',
     selectPlaceholder: 'Select...',
   },
-}
+};

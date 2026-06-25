@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Card, CardContent } from '@/components/ui/card'
-import { Icon } from '@/components/ui/icon'
-import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card';
+import { Icon } from '@/components/ui/icon';
+import { cn } from '@/lib/utils';
 
 defineProps<{
-  label: string
-  value: string | number
-  icon?: string
-  description?: string
-  class?: string
-}>()
+  label: string;
+  value: string | number;
+  icon?: string;
+  description?: string;
+  class?: string;
+}>();
 </script>
 
 <template>

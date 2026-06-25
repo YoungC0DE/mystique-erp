@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from 'vue';
+import { cn } from '@/lib/utils';
 
 defineProps<{
-  title: string
-  subtitle?: string
-  class?: HTMLAttributes['class']
-}>()
+  title: string;
+  subtitle?: string;
+  class?: HTMLAttributes['class'];
+}>();
 </script>
 
 <template>

@@ -1,84 +1,85 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { ModuleField } from '@/types'
-import type { FieldFilter } from '@/lib/filters'
-import ModuleFilterForm from '@/components/modules/ModuleFilterForm.vue'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Icon } from '@/components/ui/icon'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { ModuleField } from '@/types';
+import type { FieldFilter } from '@/lib/filters';
+import ModuleFilterForm from '@/components/modules/ModuleFilterForm.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/ui/icon';
 
 const props = defineProps<{
-  fields: ModuleField[]
-  modelValue: FieldFilter[]
-}>()
+  fields: ModuleField[];
+  modelValue: FieldFilter[];
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: FieldFilter[]): void
-  (e: 'apply'): void
-}>()
+  (e: 'update:modelValue', value: FieldFilter[]): void;
+  (e: 'apply'): void;
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const open = ref(false)
-const draft = ref<FieldFilter[]>([])
-const rootRef = ref<HTMLElement | null>(null)
+const open = ref(false);
+const draft = ref<FieldFilter[]>([]);
+const rootRef = ref<HTMLElement | null>(null);
 
-const activeCount = ref(0)
+const activeCount = ref(0);
 
 watch(
   () => props.modelValue,
   (value) => {
-    activeCount.value = value.filter((f) => f.field).length
+    activeCount.value = value.filter((f) => f.field).length;
   },
   { immediate: true, deep: true },
-)
+);
 
 watch(open, (isOpen) => {
   if (isOpen) {
-    draft.value = props.modelValue.length
-      ? props.modelValue.map((f) => ({ ...f }))
-      : []
+    draft.value = props.modelValue.length ? props.modelValue.map((f) => ({ ...f })) : [];
   }
-})
+});
 
 function apply(): void {
-  emit('update:modelValue', draft.value.filter((f) => f.field))
-  emit('apply')
-  open.value = false
+  emit(
+    'update:modelValue',
+    draft.value.filter((f) => f.field),
+  );
+  emit('apply');
+  open.value = false;
 }
 
 function clear(): void {
-  draft.value = []
-  emit('update:modelValue', [])
-  emit('apply')
-  open.value = false
+  draft.value = [];
+  emit('update:modelValue', []);
+  emit('apply');
+  open.value = false;
 }
 
 function toggleOpen(): void {
-  open.value = !open.value
+  open.value = !open.value;
 }
 
 function onDocumentClick(event: MouseEvent): void {
-  if (!open.value || !rootRef.value) return
+  if (!open.value || !rootRef.value) return;
   if (!rootRef.value.contains(event.target as Node)) {
-    open.value = false
+    open.value = false;
   }
 }
 
 function onDocumentKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape') open.value = false
+  if (event.key === 'Escape') open.value = false;
 }
 
 onMounted(() => {
-  document.addEventListener('click', onDocumentClick)
-  document.addEventListener('keydown', onDocumentKeydown)
-})
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('keydown', onDocumentKeydown);
+});
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', onDocumentClick)
-  document.removeEventListener('keydown', onDocumentKeydown)
-})
+  document.removeEventListener('click', onDocumentClick);
+  document.removeEventListener('keydown', onDocumentKeydown);
+});
 </script>
 
 <template>

@@ -1,272 +1,268 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import type { KanbanBoard, Module, ModuleField, ModuleRecord, RecordValue } from '@/types'
-import type { FieldFilter } from '@/lib/filters'
-import { modulesService } from '@/services/modules.service'
-import { recordsService, type KanbanFilters } from '@/services/records.service'
-import { apiErrorMessage } from '@/services/http'
-import { getEcho } from '@/services/echo'
-import { useAuthStore } from '@/stores/auth'
-import { useModulesStore } from '@/stores/modules'
-import { useToast } from '@/composables/useToast'
-import KanbanColumn from '@/components/kanban/KanbanColumn.vue'
-import DynamicForm from '@/components/form/DynamicForm.vue'
-import RecordDetailModal from '@/components/modules/RecordDetailModal.vue'
-import ModuleFilterDropdown from '@/components/modules/ModuleFilterDropdown.vue'
-import BaseModal from '@/components/ui/BaseModal.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Icon } from '@/components/ui/icon'
-import { controlClass } from '@/lib/inputStyles'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import type { KanbanBoard, Module, ModuleField, ModuleRecord, RecordValue } from '@/types';
+import type { FieldFilter } from '@/lib/filters';
+import { modulesService } from '@/services/modules.service';
+import { recordsService, type KanbanFilters } from '@/services/records.service';
+import { apiErrorMessage } from '@/services/http';
+import { getEcho } from '@/services/echo';
+import { useAuthStore } from '@/stores/auth';
+import { useModulesStore } from '@/stores/modules';
+import { useToast } from '@/composables/useToast';
+import KanbanColumn from '@/components/kanban/KanbanColumn.vue';
+import DynamicForm from '@/components/form/DynamicForm.vue';
+import RecordDetailModal from '@/components/modules/RecordDetailModal.vue';
+import ModuleFilterDropdown from '@/components/modules/ModuleFilterDropdown.vue';
+import BaseModal from '@/components/ui/BaseModal.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Icon } from '@/components/ui/icon';
+import { controlClass } from '@/lib/inputStyles';
 
-const props = defineProps<{ slug: string }>()
-const { t } = useI18n()
-const auth = useAuthStore()
-const modulesStore = useModulesStore()
-const toast = useToast()
-const router = useRouter()
+const props = defineProps<{ slug: string }>();
+const { t } = useI18n();
+const auth = useAuthStore();
+const modulesStore = useModulesStore();
+const toast = useToast();
+const router = useRouter();
 
-const module = ref<Module | null>(null)
-const fields = ref<ModuleField[]>([])
-const board = ref<KanbanBoard | null>(null)
+const module = ref<Module | null>(null);
+const fields = ref<ModuleField[]>([]);
+const board = ref<KanbanBoard | null>(null);
 
-const filters = ref<{ q: string; created_by: string }>({ q: '', created_by: '' })
-const fieldFilters = ref<FieldFilter[]>([])
-const pages = ref<Record<string, number>>({})
-const perPage = 10
+const filters = ref<{ q: string; created_by: string }>({ q: '', created_by: '' });
+const fieldFilters = ref<FieldFilter[]>([]);
+const pages = ref<Record<string, number>>({});
+const perPage = 10;
 
-let channelName: string | null = null
-let searchTimer: ReturnType<typeof setTimeout> | null = null
+let channelName: string | null = null;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-const canCreate = computed(() => auth.can('create') && !module.value?.is_integrated)
-const canMove = computed(() => auth.can('update'))
-const isIntegrated = computed(() => module.value?.is_integrated ?? false)
+const canCreate = computed(() => auth.can('create') && !module.value?.is_integrated);
+const canMove = computed(() => auth.can('update'));
+const isIntegrated = computed(() => module.value?.is_integrated ?? false);
 
-const totalRecords = computed(
-  () => board.value?.columns.reduce((acc, c) => acc + c.meta.total, 0) ?? 0,
-)
+const totalRecords = computed(() => board.value?.columns.reduce((acc, c) => acc + c.meta.total, 0) ?? 0);
 
-const activeFilterCount = computed(() => fieldFilters.value.filter((f) => f.field).length)
+const activeFilterCount = computed(() => fieldFilters.value.filter((f) => f.field).length);
 
 async function resolveModule(): Promise<void> {
-  let mod = modulesStore.findBySlug(props.slug)
+  let mod = modulesStore.findBySlug(props.slug);
   if (!mod) {
-    await modulesStore.loadAllowed()
-    mod = modulesStore.findBySlug(props.slug)
+    await modulesStore.loadAllowed();
+    mod = modulesStore.findBySlug(props.slug);
   }
   if (!mod) {
-    toast.error(t('board.moduleNotFound'))
-    router.push({ name: 'dashboard' })
-    return
+    toast.error(t('board.moduleNotFound'));
+    router.push({ name: 'dashboard' });
+    return;
   }
-  module.value = await modulesService.get(mod.id)
-  fields.value = (module.value.fields ?? []).slice().sort((a, b) => a.order - b.order)
+  module.value = await modulesService.get(mod.id);
+  fields.value = (module.value.fields ?? []).slice().sort((a, b) => a.order - b.order);
 }
 
 function buildFilters(): KanbanFilters {
-  const f: KanbanFilters = { per_page: perPage }
-  if (filters.value.q) f.q = filters.value.q
-  if (filters.value.created_by) f.created_by = filters.value.created_by
-  if (fieldFilters.value.length) f.filters = fieldFilters.value
+  const f: KanbanFilters = { per_page: perPage };
+  if (filters.value.q) f.q = filters.value.q;
+  if (filters.value.created_by) f.created_by = filters.value.created_by;
+  if (fieldFilters.value.length) f.filters = fieldFilters.value;
   for (const [col, page] of Object.entries(pages.value)) {
-    if (page > 1) f[`${col}_page`] = page
+    if (page > 1) f[`${col}_page`] = page;
   }
-  return f
+  return f;
 }
 
 async function loadBoard(silent = false): Promise<void> {
-  if (!module.value) return
+  if (!module.value) return;
   try {
     board.value = await recordsService.kanban(module.value.id, buildFilters(), {
       skipGlobalLoading: silent,
-    })
+    });
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 function subscribe(): void {
-  if (!module.value) return
-  channelName = `module.${module.value.id}`
+  if (!module.value) return;
+  channelName = `module.${module.value.id}`;
   getEcho()
     .private(channelName)
     .listen('.record.moved', () => {
-      loadBoard(true)
-    })
+      loadBoard(true);
+    });
 }
 
 function unsubscribe(): void {
   if (channelName) {
-    getEcho().leave(channelName)
-    channelName = null
+    getEcho().leave(channelName);
+    channelName = null;
   }
 }
 
-const dragging = ref<ModuleRecord | null>(null)
+const dragging = ref<ModuleRecord | null>(null);
 
 async function onDrop(payload: { status: string }): Promise<void> {
-  const record = dragging.value
-  dragging.value = null
-  if (!record || record.status === payload.status || !module.value) return
+  const record = dragging.value;
+  dragging.value = null;
+  if (!record || record.status === payload.status || !module.value) return;
 
-  const from = record.status
-  const to = payload.status
-  applyLocalMove(record.id, from, to)
+  const from = record.status;
+  const to = payload.status;
+  applyLocalMove(record.id, from, to);
   try {
     if (isIntegrated.value) {
-      await recordsService.moveIntegrated(module.value.id, record.id, to)
+      await recordsService.moveIntegrated(module.value.id, record.id, to);
     } else {
-      await recordsService.move(record.id, to)
+      await recordsService.move(record.id, to);
     }
   } catch (e) {
-    applyLocalMove(record.id, to, from)
-    toast.error(apiErrorMessage(e))
+    applyLocalMove(record.id, to, from);
+    toast.error(apiErrorMessage(e));
   }
 }
 
 function applyLocalMove(recordId: string, from: string, to: string): void {
-  if (!board.value) return
-  const fromCol = board.value.columns.find((c) => c.key === from)
-  const toCol = board.value.columns.find((c) => c.key === to)
-  if (!fromCol || !toCol) return
-  const idx = fromCol.records.findIndex((r) => r.id === recordId)
-  if (idx === -1) return
-  const [rec] = fromCol.records.splice(idx, 1)
-  rec.status = to
-  toCol.records.unshift(rec)
-  fromCol.meta.total = Math.max(0, fromCol.meta.total - 1)
-  toCol.meta.total += 1
+  if (!board.value) return;
+  const fromCol = board.value.columns.find((c) => c.key === from);
+  const toCol = board.value.columns.find((c) => c.key === to);
+  if (!fromCol || !toCol) return;
+  const idx = fromCol.records.findIndex((r) => r.id === recordId);
+  if (idx === -1) return;
+  const [rec] = fromCol.records.splice(idx, 1);
+  rec.status = to;
+  toCol.records.unshift(rec);
+  fromCol.meta.total = Math.max(0, fromCol.meta.total - 1);
+  toCol.meta.total += 1;
 }
 
 function changePage(payload: { status: string; page: number }): void {
-  pages.value = { ...pages.value, [payload.status]: payload.page }
-  loadBoard(true)
+  pages.value = { ...pages.value, [payload.status]: payload.page };
+  loadBoard(true);
 }
 
 function applyFieldFilters(): void {
-  pages.value = {}
-  loadBoard(true)
+  pages.value = {};
+  loadBoard(true);
 }
 
 function clearFieldFilters(): void {
-  fieldFilters.value = []
-  pages.value = {}
-  loadBoard(true)
+  fieldFilters.value = [];
+  pages.value = {};
+  loadBoard(true);
 }
 
-const showEditModal = ref(false)
-const showDetailModal = ref(false)
-const detailRecord = ref<ModuleRecord | null>(null)
-const editing = ref<ModuleRecord | null>(null)
-const recordForm = ref<Record<string, RecordValue>>({})
-const recordStatus = ref<string>('inputar')
-const formRef = ref<InstanceType<typeof DynamicForm> | null>(null)
+const showEditModal = ref(false);
+const showDetailModal = ref(false);
+const detailRecord = ref<ModuleRecord | null>(null);
+const editing = ref<ModuleRecord | null>(null);
+const recordForm = ref<Record<string, RecordValue>>({});
+const recordStatus = ref<string>('inputar');
+const formRef = ref<InstanceType<typeof DynamicForm> | null>(null);
 
 function openCreate(): void {
-  editing.value = null
-  recordForm.value = {}
-  recordStatus.value = module.value?.statuses?.[0]?.slug ?? 'inputar'
-  showEditModal.value = true
+  editing.value = null;
+  recordForm.value = {};
+  recordStatus.value = module.value?.statuses?.[0]?.slug ?? 'inputar';
+  showEditModal.value = true;
 }
 
 function openRecord(record: ModuleRecord): void {
-  detailRecord.value = record
-  showDetailModal.value = true
+  detailRecord.value = record;
+  showDetailModal.value = true;
 }
 
 function onDetailStatusChanged(payload: { recordId: string; from: string; to: string }): void {
-  applyLocalMove(payload.recordId, payload.from, payload.to)
+  applyLocalMove(payload.recordId, payload.from, payload.to);
   if (detailRecord.value?.id === payload.recordId) {
-    detailRecord.value = { ...detailRecord.value, status: payload.to }
+    detailRecord.value = { ...detailRecord.value, status: payload.to };
   }
 }
 
 async function saveRecord(): Promise<void> {
-  if (!module.value) return
+  if (!module.value) return;
   if (formRef.value && !formRef.value.validate()) {
-    toast.error(t('board.requiredFields'))
-    return
+    toast.error(t('board.requiredFields'));
+    return;
   }
   try {
     if (editing.value) {
       await recordsService.update(editing.value.id, {
         status: recordStatus.value,
         values: recordForm.value,
-      })
-      toast.success(t('board.recordUpdated'))
+      });
+      toast.success(t('board.recordUpdated'));
     } else {
       await recordsService.create(module.value.id, {
         status: recordStatus.value,
         values: recordForm.value,
-      })
-      toast.success(t('board.recordCreated'))
+      });
+      toast.success(t('board.recordCreated'));
     }
-    showEditModal.value = false
-    await loadBoard(true)
+    showEditModal.value = false;
+    await loadBoard(true);
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 async function deleteRecord(): Promise<void> {
-  if (!editing.value) return
-  if (!confirm(t('board.confirmRemove'))) return
+  if (!editing.value) return;
+  if (!confirm(t('board.confirmRemove'))) return;
   try {
-    await recordsService.remove(editing.value.id)
-    toast.success(t('board.recordRemoved'))
-    showEditModal.value = false
-    await loadBoard(true)
+    await recordsService.remove(editing.value.id);
+    toast.success(t('board.recordRemoved'));
+    showEditModal.value = false;
+    await loadBoard(true);
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 watch(
   () => filters.value.q,
   () => {
-    if (searchTimer) clearTimeout(searchTimer)
+    if (searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
-      pages.value = {}
-      loadBoard(true)
-    }, 350)
+      pages.value = {};
+      loadBoard(true);
+    }, 350);
   },
-)
+);
 
 watch(
   () => props.slug,
   async () => {
-    unsubscribe()
-    await init()
+    unsubscribe();
+    await init();
   },
-)
+);
 
 async function init(): Promise<void> {
-  fieldFilters.value = []
-  await resolveModule()
+  fieldFilters.value = [];
+  await resolveModule();
   if (module.value) {
-    await loadBoard()
-    subscribe()
+    await loadBoard();
+    subscribe();
   }
 }
 
-onMounted(init)
-onBeforeUnmount(unsubscribe)
+onMounted(init);
+onBeforeUnmount(unsubscribe);
 </script>
 
 <template>
   <div class="flex h-full flex-col animate-page-in">
-    <div class="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-6 py-5 backdrop-blur-sm lg:px-8">
+    <div
+      class="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-6 py-5 backdrop-blur-sm lg:px-8"
+    >
       <div class="flex flex-wrap items-center gap-4">
-        <ModuleFilterDropdown
-          v-model="fieldFilters"
-          :fields="fields"
-          @apply="applyFieldFilters"
-        />
+        <ModuleFilterDropdown v-model="fieldFilters" :fields="fields" @apply="applyFieldFilters" />
         <div>
           <h1 class="text-xl font-semibold tracking-tight">{{ module?.name ?? '...' }}</h1>
           <p class="mt-0.5 text-sm text-muted-foreground">
@@ -278,11 +274,7 @@ onBeforeUnmount(unsubscribe)
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <Input
-          v-model="filters.q"
-          class="w-[220px]"
-          :placeholder="t('board.searchPlaceholder')"
-        />
+        <Input v-model="filters.q" class="w-[220px]" :placeholder="t('board.searchPlaceholder')" />
         <Button
           v-if="auth.can('update')"
           variant="secondary"
@@ -357,12 +349,7 @@ onBeforeUnmount(unsubscribe)
       <DynamicForm ref="formRef" v-model="recordForm" :fields="fields" />
 
       <template #footer>
-        <Button
-          v-if="editing && auth.can('delete')"
-          variant="danger"
-          class="mr-auto"
-          @click="deleteRecord"
-        >
+        <Button v-if="editing && auth.can('delete')" variant="danger" class="mr-auto" @click="deleteRecord">
           {{ t('common.delete') }}
         </Button>
         <Button variant="secondary" @click="showEditModal = false">{{ t('common.cancel') }}</Button>

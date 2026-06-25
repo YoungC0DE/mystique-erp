@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
+import type { HTMLAttributes } from 'vue';
 import {
   SelectContent,
   SelectPortal,
@@ -7,15 +7,13 @@ import {
   type SelectContentEmits,
   type SelectContentProps,
   useForwardPropsEmits,
-} from 'reka-ui'
-import { cn } from '@/lib/utils'
+} from 'reka-ui';
+import { cn } from '@/lib/utils';
 
-const props = defineProps<
-  SelectContentProps & { class?: HTMLAttributes['class'] }
->()
-const emits = defineEmits<SelectContentEmits>()
+const props = defineProps<SelectContentProps & { class?: HTMLAttributes['class'] }>();
+const emits = defineEmits<SelectContentEmits>();
 
-const forwarded = useForwardPropsEmits(props, emits)
+const forwarded = useForwardPropsEmits(props, emits);
 </script>
 
 <template>

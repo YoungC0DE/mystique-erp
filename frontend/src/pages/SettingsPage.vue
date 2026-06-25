@@ -1,31 +1,24 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { DatabaseConnection } from '@/types'
-import { connectionsService, type ConnectionPayload } from '@/services/connections.service'
-import { apiErrorMessage } from '@/services/http'
-import { useToast } from '@/composables/useToast'
-import BaseModal from '@/components/ui/BaseModal.vue'
-import PageContainer from '@/components/layout/PageContainer.vue'
-import PageHeader from '@/components/layout/PageHeader.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { DatabaseConnection } from '@/types';
+import { connectionsService, type ConnectionPayload } from '@/services/connections.service';
+import { apiErrorMessage } from '@/services/http';
+import { useToast } from '@/composables/useToast';
+import BaseModal from '@/components/ui/BaseModal.vue';
+import PageContainer from '@/components/layout/PageContainer.vue';
+import PageHeader from '@/components/layout/PageHeader.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-const { t } = useI18n()
-const toast = useToast()
+const { t } = useI18n();
+const toast = useToast();
 
-const connections = ref<DatabaseConnection[]>([])
-const showModal = ref(false)
-const editing = ref<DatabaseConnection | null>(null)
+const connections = ref<DatabaseConnection[]>([]);
+const showModal = ref(false);
+const editing = ref<DatabaseConnection | null>(null);
 
 const form = reactive<ConnectionPayload>({
   name: '',
@@ -35,18 +28,18 @@ const form = reactive<ConnectionPayload>({
   username: '',
   password: '',
   table_name: '',
-})
+});
 
 async function load(): Promise<void> {
   try {
-    connections.value = await connectionsService.list()
+    connections.value = await connectionsService.list();
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 function openCreate(): void {
-  editing.value = null
+  editing.value = null;
   Object.assign(form, {
     name: '',
     host: '127.0.0.1',
@@ -55,12 +48,12 @@ function openCreate(): void {
     username: '',
     password: '',
     table_name: '',
-  })
-  showModal.value = true
+  });
+  showModal.value = true;
 }
 
 function openEdit(connection: DatabaseConnection): void {
-  editing.value = connection
+  editing.value = connection;
   Object.assign(form, {
     name: connection.name,
     host: connection.host,
@@ -69,73 +62,73 @@ function openEdit(connection: DatabaseConnection): void {
     username: connection.username,
     password: '',
     table_name: connection.table_name,
-  })
-  showModal.value = true
+  });
+  showModal.value = true;
 }
 
 async function testCurrent(): Promise<void> {
   try {
     if (editing.value) {
-      await connectionsService.test(editing.value.id)
+      await connectionsService.test(editing.value.id);
     } else {
       if (!form.password) {
-        toast.error(t('connections.password') + ': ' + t('common.genericError'))
-        return
+        toast.error(t('connections.password') + ': ' + t('common.genericError'));
+        return;
       }
-      await connectionsService.validate({ ...form, password: form.password })
+      await connectionsService.validate({ ...form, password: form.password });
     }
-    toast.success(t('settings.tested'))
+    toast.success(t('settings.tested'));
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 async function save(): Promise<void> {
   try {
-    const payload: Partial<ConnectionPayload> = { ...form }
-    if (editing.value && !payload.password) delete payload.password
+    const payload: Partial<ConnectionPayload> = { ...form };
+    if (editing.value && !payload.password) delete payload.password;
 
     if (editing.value) {
-      await connectionsService.update(editing.value.id, payload)
-      toast.success(t('settings.updated'))
+      await connectionsService.update(editing.value.id, payload);
+      toast.success(t('settings.updated'));
     } else {
       if (!payload.password) {
-        toast.error(t('connections.password') + ': ' + t('common.genericError'))
-        return
+        toast.error(t('connections.password') + ': ' + t('common.genericError'));
+        return;
       }
-      await connectionsService.create(payload as ConnectionPayload)
-      toast.success(t('settings.created'))
+      await connectionsService.create(payload as ConnectionPayload);
+      toast.success(t('settings.created'));
     }
 
-    showModal.value = false
-    await load()
+    showModal.value = false;
+    await load();
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 async function testRow(connection: DatabaseConnection): Promise<void> {
   try {
-    await connectionsService.test(connection.id)
-    toast.success(t('settings.tested'))
+    await connectionsService.test(connection.id);
+    toast.success(t('settings.tested'));
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
 async function remove(connection: DatabaseConnection): Promise<void> {
-  if (!confirm(t('settings.confirmRemove', { name: connection.name }))) return
+  if (!confirm(t('settings.confirmRemove', { name: connection.name }))) return;
 
   try {
-    await connectionsService.remove(connection.id)
-    toast.success(t('settings.removed'))
-    await load()
+    await connectionsService.remove(connection.id);
+    toast.success(t('settings.removed'));
+    await load();
   } catch (e) {
-    toast.error(apiErrorMessage(e))
+    toast.error(apiErrorMessage(e));
   }
 }
 
-onMounted(load)
+onMounted(load);
 </script>
 
 <template>
@@ -228,12 +221,7 @@ onMounted(load)
         </div>
         <div class="sm:col-span-2">
           <Label for="conn-table">{{ t('connections.table') }}</Label>
-          <Input
-            id="conn-table"
-            v-model="form.table_name"
-            :placeholder="t('connections.tablePlaceholder')"
-            required
-          />
+          <Input id="conn-table" v-model="form.table_name" :placeholder="t('connections.tablePlaceholder')" required />
         </div>
       </form>
 

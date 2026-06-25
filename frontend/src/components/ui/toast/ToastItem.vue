@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { ToastType } from '@/composables/useToast'
-import { cn } from '@/lib/utils'
+import type { ToastType } from '@/composables/useToast';
+import { cn } from '@/lib/utils';
 
 defineProps<{
-  type: ToastType
-  message: string
-}>()
+  type: ToastType;
+  message: string;
+}>();
 
-defineEmits<{ (e: 'dismiss'): void }>()
+defineEmits<{ (e: 'dismiss'): void }>();
 
 const typeClasses: Record<ToastType, string> = {
   success: 'border-l-[3px] border-l-success',
   error: 'border-l-[3px] border-l-danger',
   info: 'border-l-[3px] border-l-primary',
-}
+};
 </script>
 
 <template>

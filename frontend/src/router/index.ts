@@ -1,38 +1,34 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('@/components/layout/PublicLayout.vue'),
+    component: () => import('@/components/login/LoginLayout.vue'),
+    meta: { guest: true },
     children: [
       {
         path: '',
-        name: 'home',
-        component: () => import('@/pages/HomePage.vue'),
-      },
-      {
-        path: 'documentacao',
-        name: 'documentation',
-        component: () => import('@/pages/DocumentationPage.vue'),
-      },
-      {
-        path: 'entrar',
         name: 'login',
         component: () => import('@/pages/LoginPage.vue'),
-        meta: { guest: true },
-      },
-      {
-        path: 'registrar',
-        name: 'register',
-        component: () => import('@/pages/RegisterPage.vue'),
-        meta: { guest: true },
       },
     ],
   },
   {
+    path: '/entrar',
+    redirect: { name: 'login' },
+  },
+  {
     path: '/login',
+    redirect: { name: 'login' },
+  },
+  {
+    path: '/documentacao',
+    redirect: { name: 'login' },
+  },
+  {
+    path: '/registrar',
     redirect: { name: 'login' },
   },
   {
@@ -97,38 +93,34 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: { name: 'home' },
+    redirect: { name: 'login' },
   },
-]
+];
 
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
 router.beforeEach(async (to) => {
-  const auth = useAuthStore()
-  await auth.hydrate()
+  const auth = useAuthStore();
+  await auth.hydrate();
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return { name: 'dashboard' }
-  }
-
-  if (to.name === 'home' && auth.isAuthenticated) {
-    return { name: 'dashboard' }
+    return { name: 'dashboard' };
   }
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    return { name: 'login', query: { redirect: to.fullPath } };
   }
 
   if (to.meta.admin && !auth.isAdmin) {
-    return { name: 'dashboard' }
+    return { name: 'dashboard' };
   }
 
   if (to.meta.permission && !auth.can(to.meta.permission as string)) {
-    return { name: 'dashboard' }
+    return { name: 'dashboard' };
   }
 
-  return true
-})
+  return true;
+});

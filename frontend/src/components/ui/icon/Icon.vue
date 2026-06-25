@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { computed } from 'vue'
-import { cn } from '@/lib/utils'
-import { resolveLucideIcon } from '@/lib/icon'
+import type { HTMLAttributes } from 'vue';
+import { computed } from 'vue';
+import { cn } from '@/lib/utils';
+import { resolveLucideIcon } from '@/lib/icon';
 
 const props = withDefaults(
   defineProps<{
-    name: string
-    size?: number | string
-    strokeWidth?: number | string
-    class?: HTMLAttributes['class']
+    name: string;
+    size?: number | string;
+    strokeWidth?: number | string;
+    class?: HTMLAttributes['class'];
   }>(),
   {
     size: 20,
     strokeWidth: 2,
   },
-)
+);
 
-const icon = computed(() => resolveLucideIcon(props.name))
+const icon = computed(() => resolveLucideIcon(props.name));
 </script>
 
 <template>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useI18n } from 'vue-i18n'
-import { Spinner } from '@/components/ui/spinner'
-import { useLoadingStore } from '@/stores/loading'
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { Spinner } from '@/components/ui/spinner';
+import { useLoadingStore } from '@/stores/loading';
 
-const { t } = useI18n()
-const loading = useLoadingStore()
-const { isLoading } = storeToRefs(loading)
+const { t } = useI18n();
+const loading = useLoadingStore();
+const { isLoading } = storeToRefs(loading);
 </script>
 
 <template>

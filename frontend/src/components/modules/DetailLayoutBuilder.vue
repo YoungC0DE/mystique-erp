@@ -1,134 +1,128 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { DetailLayoutRow, ModuleField } from '@/types'
-import {
-  MAX_FIELDS_PER_DETAIL_ROW,
-  allKeysInRows,
-  rowGridClass,
-} from '@/lib/detailLayout'
-import { Button } from '@/components/ui/button'
-import { Icon } from '@/components/ui/icon'
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { DetailLayoutRow, ModuleField } from '@/types';
+import { MAX_FIELDS_PER_DETAIL_ROW, allKeysInRows, rowGridClass } from '@/lib/detailLayout';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 
 const props = defineProps<{
-  fields: ModuleField[]
-  rows: DetailLayoutRow[]
-}>()
+  fields: ModuleField[];
+  rows: DetailLayoutRow[];
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:rows', value: DetailLayoutRow[]): void
-}>()
+  (e: 'update:rows', value: DetailLayoutRow[]): void;
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const localRows = ref<DetailLayoutRow[]>([])
-const dragFieldKey = ref<string | null>(null)
-const dragFromRow = ref<number | null>(null)
-const dragFromCol = ref<number | null>(null)
+const localRows = ref<DetailLayoutRow[]>([]);
+const dragFieldKey = ref<string | null>(null);
+const dragFromRow = ref<number | null>(null);
+const dragFromCol = ref<number | null>(null);
 
 watch(
   () => props.rows,
   (value) => {
-    localRows.value = value.map((r) => ({ field_keys: [...r.field_keys] }))
+    localRows.value = value.map((r) => ({ field_keys: [...r.field_keys] }));
   },
   { immediate: true, deep: true },
-)
+);
 
-const placedKeys = computed(() => new Set(allKeysInRows(localRows.value)))
+const placedKeys = computed(() => new Set(allKeysInRows(localRows.value)));
 
 const paletteFields = computed(() =>
-  props.fields
-    .filter((f) => f.visible && !placedKeys.value.has(f.key))
-    .sort((a, b) => a.label.localeCompare(b.label)),
-)
+  props.fields.filter((f) => f.visible && !placedKeys.value.has(f.key)).sort((a, b) => a.label.localeCompare(b.label)),
+);
 
 function fieldByKey(key: string): ModuleField | undefined {
-  return props.fields.find((f) => f.key === key)
+  return props.fields.find((f) => f.key === key);
 }
 
 function commit(): void {
   emit(
     'update:rows',
     localRows.value.map((r) => ({ field_keys: [...r.field_keys] })),
-  )
+  );
 }
 
 function addRow(): void {
-  localRows.value.push({ field_keys: [] })
-  commit()
+  localRows.value.push({ field_keys: [] });
+  commit();
 }
 
 function removeRow(rowIndex: number): void {
-  localRows.value.splice(rowIndex, 1)
-  commit()
+  localRows.value.splice(rowIndex, 1);
+  commit();
 }
 
 function removeField(rowIndex: number, colIndex: number): void {
-  localRows.value[rowIndex].field_keys.splice(colIndex, 1)
+  localRows.value[rowIndex].field_keys.splice(colIndex, 1);
   if (localRows.value[rowIndex].field_keys.length === 0) {
-    localRows.value.splice(rowIndex, 1)
+    localRows.value.splice(rowIndex, 1);
   }
-  commit()
+  commit();
 }
 
 function onPaletteDragStart(key: string): void {
-  dragFieldKey.value = key
-  dragFromRow.value = null
-  dragFromCol.value = null
+  dragFieldKey.value = key;
+  dragFromRow.value = null;
+  dragFromCol.value = null;
 }
 
 function onFieldDragStart(rowIndex: number, colIndex: number, key: string): void {
-  dragFieldKey.value = key
-  dragFromRow.value = rowIndex
-  dragFromCol.value = colIndex
+  dragFieldKey.value = key;
+  dragFromRow.value = rowIndex;
+  dragFromCol.value = colIndex;
 }
 
 function onDragEnd(): void {
-  dragFieldKey.value = null
-  dragFromRow.value = null
-  dragFromCol.value = null
+  dragFieldKey.value = null;
+  dragFromRow.value = null;
+  dragFromCol.value = null;
 }
 
 function insertIntoRow(rowIndex: number, colIndex?: number): void {
-  const key = dragFieldKey.value
-  if (!key) return
+  const key = dragFieldKey.value;
+  if (!key) return;
 
   if (dragFromRow.value !== null && dragFromCol.value !== null) {
-    localRows.value[dragFromRow.value].field_keys.splice(dragFromCol.value, 1)
+    localRows.value[dragFromRow.value].field_keys.splice(dragFromCol.value, 1);
     if (localRows.value[dragFromRow.value].field_keys.length === 0) {
-      localRows.value.splice(dragFromRow.value, 1)
-      if (dragFromRow.value < rowIndex) rowIndex--
+      localRows.value.splice(dragFromRow.value, 1);
+      if (dragFromRow.value < rowIndex) rowIndex--;
     }
   }
 
-  const row = localRows.value[rowIndex]
-  if (!row || row.field_keys.length >= MAX_FIELDS_PER_DETAIL_ROW) return
+  const row = localRows.value[rowIndex];
+  if (!row || row.field_keys.length >= MAX_FIELDS_PER_DETAIL_ROW) return;
   if (row.field_keys.includes(key)) {
-    commit()
-    onDragEnd()
-    return
+    commit();
+    onDragEnd();
+    return;
   }
 
-  const insertAt = colIndex ?? row.field_keys.length
-  row.field_keys.splice(insertAt, 0, key)
-  commit()
-  onDragEnd()
+  const insertAt = colIndex ?? row.field_keys.length;
+  row.field_keys.splice(insertAt, 0, key);
+  commit();
+  onDragEnd();
 }
 
 function onDropNewRow(): void {
-  const key = dragFieldKey.value
-  if (!key) return
+  const key = dragFieldKey.value;
+  if (!key) return;
 
   if (dragFromRow.value !== null && dragFromCol.value !== null) {
-    localRows.value[dragFromRow.value].field_keys.splice(dragFromCol.value, 1)
+    localRows.value[dragFromRow.value].field_keys.splice(dragFromCol.value, 1);
     if (localRows.value[dragFromRow.value].field_keys.length === 0) {
-      localRows.value.splice(dragFromRow.value, 1)
+      localRows.value.splice(dragFromRow.value, 1);
     }
   }
 
-  localRows.value.push({ field_keys: [key] })
-  commit()
-  onDragEnd()
+  localRows.value.push({ field_keys: [key] });
+  commit();
+  onDragEnd();
 }
 </script>
 

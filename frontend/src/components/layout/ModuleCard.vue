@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Icon } from '@/components/ui/icon'
-import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui/icon';
+import { cn } from '@/lib/utils';
 
 defineProps<{
-  name: string
-  icon?: string
-  description?: string
-  to?: object | string
-}>()
+  name: string;
+  icon?: string;
+  description?: string;
+  to?: object | string;
+}>();
 </script>
 
 <template>

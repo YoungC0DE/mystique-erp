@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Label, type LabelProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from 'vue';
+import { Label, type LabelProps } from 'reka-ui';
+import { cn } from '@/lib/utils';
 
-const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>();
 </script>
 
 <template>

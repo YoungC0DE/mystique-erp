@@ -1,382 +1,256 @@
-export type PermissionSlug = 'create' | 'read' | 'update' | 'delete'
-
-
-
+export type PermissionSlug = 'create' | 'read' | 'update' | 'delete';
 export interface Tokens {
+  token_type?: string;
 
-  token_type?: string
+  expires_in?: number;
 
-  expires_in?: number
+  access_token: string;
 
-  access_token: string
-
-  refresh_token: string
-
+  refresh_token: string;
 }
-
-
-
 export interface Permission {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
-
-  slug: PermissionSlug | string
-
+  slug: PermissionSlug | string;
 }
-
-
-
 export interface Role {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
+  slug: string;
 
-  slug: string
+  permissions?: Permission[];
 
-  permissions?: Permission[]
-
-  created_at?: string
-
+  created_at?: string;
 }
-
-
-
-export type AppLocale = 'pt-BR' | 'en'
-
-
-
+export type AppLocale = 'pt-BR' | 'en';
 export interface User {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
+  email: string;
 
-  email: string
+  is_admin: boolean;
 
-  is_admin: boolean
+  locale: AppLocale;
 
-  locale: AppLocale
+  roles?: Role[];
 
-  roles?: Role[]
+  permissions: string[];
 
-  permissions: string[]
-
-  created_at?: string
-
+  created_at?: string;
 }
-
-
-
 export type FieldType =
-
   | 'texto'
-
   | 'textarea'
-
   | 'numero'
-
   | 'decimal'
-
   | 'boolean'
-
   | 'email'
-
   | 'telefone'
-
   | 'data'
-
   | 'datetime'
-
   | 'select'
-
-  | 'multiselect'
-
-
-
+  | 'multiselect';
 export interface ModuleField {
+  id: string;
 
-  id: string
+  label: string;
 
-  label: string
+  key: string;
 
-  key: string
+  type: FieldType;
 
-  type: FieldType
+  required: boolean;
 
-  required: boolean
+  default_value: string | null;
 
-  default_value: string | null
+  options: string[] | null;
 
-  options: string[] | null
+  order: number;
 
-  order: number
+  show_in_card: boolean;
 
-  show_in_card: boolean
+  show_in_list: boolean;
 
-  show_in_list: boolean
+  show_in_detail: boolean;
 
-  show_in_detail: boolean
+  highlighted: boolean;
 
-  highlighted: boolean
-
-  visible: boolean
-
+  visible: boolean;
 }
-
-
-
 export interface DetailLayoutGroup {
+  label?: string;
 
-  label?: string
-
-  field_keys: string[]
-
+  field_keys: string[];
 }
-
-
-
 export interface DetailLayoutRow {
-
-  field_keys: string[]
-
+  field_keys: string[];
 }
-
-
-
 export interface DetailLayout {
+  rows?: DetailLayoutRow[];
 
-  rows?: DetailLayoutRow[]
+  columns?: 1 | 2;
 
-  columns?: 1 | 2
-
-  groups?: DetailLayoutGroup[]
-
+  groups?: DetailLayoutGroup[];
 }
-
-
-
 export interface ModuleKanbanStatus {
+  id: string;
 
-  id: string
+  slug: string;
 
-  slug: string
+  label: string;
 
-  label: string
+  order: number;
 
-  order: number
-
-  external_value: string
-
+  external_value: string;
 }
-
-
-
 export interface Module {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
+  slug: string;
 
-  slug: string
+  icon: string | null;
 
-  icon: string | null
+  status: string;
 
-  status: string
+  is_integrated?: boolean;
 
-  is_integrated?: boolean
+  connection_id?: string | null;
 
-  connection_id?: string | null
+  connection?: DatabaseConnection;
 
-  connection?: DatabaseConnection
+  callback_url?: string | null;
 
-  callback_url?: string | null
+  callback_method?: string;
 
-  callback_method?: string
+  status_column?: string | null;
 
-  status_column?: string | null
+  statuses?: ModuleKanbanStatus[];
 
-  statuses?: ModuleKanbanStatus[]
+  fields_count?: number;
 
-  fields_count?: number
+  fields?: ModuleField[];
 
-  fields?: ModuleField[]
+  detail_layout?: DetailLayout | null;
 
-  detail_layout?: DetailLayout | null
-
-  created_at?: string
-
+  created_at?: string;
 }
-
-
-
-export type RecordValue = string | number | boolean | string[] | null
-
-
-
+export type RecordValue = string | number | boolean | string[] | null;
 export interface ModuleRecord {
+  id: string;
 
-  id: string
+  status: string;
 
-  status: string
+  values: Record<string, RecordValue>;
 
-  values: Record<string, RecordValue>
+  created_at?: string;
 
-  created_at?: string
-
-  updated_at?: string
-
+  updated_at?: string;
 }
-
-
-
 export interface RecordAudit {
+  id: string;
 
-  id: string
+  action: string;
 
-  action: string
+  changes: Record<string, { old: RecordValue; new: RecordValue }>;
 
-  changes: Record<string, { old: RecordValue; new: RecordValue }>
+  user?: { id: string | null; name: string | null };
 
-  user?: { id: string | null; name: string | null }
-
-  created_at?: string
-
+  created_at?: string;
 }
-
-
-
 export interface PaginationMeta {
+  current_page: number;
 
-  current_page: number
+  last_page: number;
 
-  last_page: number
+  per_page: number;
 
-  per_page: number
-
-  total: number
-
+  total: number;
 }
-
-
-
 export interface Paginated<T> {
+  data: T[];
 
-  data: T[]
+  meta: PaginationMeta;
 
-  meta: PaginationMeta
-
-  links?: unknown
-
+  links?: unknown;
 }
-
-
-
 export interface KanbanColumnData {
+  key: string;
 
-  key: string
+  label: string;
 
-  label: string
+  color?: string;
 
-  color?: string
+  records: ModuleRecord[];
 
-  records: ModuleRecord[]
-
-  meta: PaginationMeta
-
+  meta: PaginationMeta;
 }
-
-
-
 export interface KanbanBoard {
+  module: string;
 
-  module: string
-
-  columns: KanbanColumnData[]
-
+  columns: KanbanColumnData[];
 }
-
-
-
 export interface RecordNote {
+  body: string | null;
 
-  body: string | null
+  updated_at?: string | null;
 
-  updated_at?: string | null
-
-  updated_by?: { id: string | null; name: string | null } | null
-
+  updated_by?: { id: string | null; name: string | null } | null;
 }
-
-
-
 export interface DatabaseConnection {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
+  host: string;
 
-  host: string
+  port: number;
 
-  port: number
+  database: string;
 
-  database: string
+  username: string;
 
-  username: string
+  table_name: string;
 
-  table_name: string
+  has_password: boolean;
 
-  has_password: boolean
+  created_at?: string;
 
-  created_at?: string
-
-  updated_at?: string
-
+  updated_at?: string;
 }
-
-
-
 export interface DatabaseColumn {
+  name: string;
 
-  name: string
-
-  type: string
-
+  type: string;
 }
-
-
-
 export interface Report {
+  id: string;
 
-  id: string
+  name: string;
 
-  name: string
+  module_id: string;
 
-  module_id: string
+  module?: Module;
 
-  module?: Module
+  field_keys: string[];
 
-  field_keys: string[]
+  filters: import('@/lib/filters').FieldFilter[];
 
-  filters: import('@/lib/filters').FieldFilter[]
+  created_by?: { id: string | null; name: string | null };
 
-  created_by?: { id: string | null; name: string | null }
+  created_at?: string;
 
-  created_at?: string
-
-  updated_at?: string
-
+  updated_at?: string;
 }
-
-
-
 export interface ReportRunResult {
+  data: Record<string, unknown>[];
 
-  data: Record<string, unknown>[]
-
-  meta: PaginationMeta
-
+  meta: PaginationMeta;
 }
-

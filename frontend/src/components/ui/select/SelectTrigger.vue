@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { SelectIcon, SelectTrigger, type SelectTriggerProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from 'vue';
+import { SelectIcon, SelectTrigger, type SelectTriggerProps } from 'reka-ui';
+import { cn } from '@/lib/utils';
 
-const props = defineProps<
-  SelectTriggerProps & { class?: HTMLAttributes['class'] }
->()
+const props = defineProps<SelectTriggerProps & { class?: HTMLAttributes['class'] }>();
 </script>
 
 <template>
@@ -20,7 +18,14 @@ const props = defineProps<
   >
     <slot />
     <SelectIcon as-child>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 opacity-50">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="h-4 w-4 opacity-50"
+      >
         <path d="m6 9 6 6 6-6" />
       </svg>
     </SelectIcon>

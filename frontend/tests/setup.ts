@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 // O jsdom não implementa matchMedia, usado pela store de tema.
 if (!window.matchMedia) {
@@ -11,5 +11,5 @@ if (!window.matchMedia) {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
-  }))
+  }));
 }

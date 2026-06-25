@@ -1,4 +1,4 @@
-import type { FieldType } from '@/types'
+import type { FieldType } from '@/types';
 
 export const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'texto', label: 'Texto' },
@@ -12,10 +12,10 @@ export const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'datetime', label: 'Data e hora' },
   { value: 'select', label: 'Seleção (única)' },
   { value: 'multiselect', label: 'Seleção (múltipla)' },
-]
+];
 
-export const TYPES_WITH_OPTIONS: FieldType[] = ['select', 'multiselect']
+export const TYPES_WITH_OPTIONS: FieldType[] = ['select', 'multiselect'];
 
 export function fieldTypeLabel(type: FieldType): string {
-  return FIELD_TYPES.find((t) => t.value === type)?.label ?? type
+  return FIELD_TYPES.find((t) => t.value === type)?.label ?? type;
 }

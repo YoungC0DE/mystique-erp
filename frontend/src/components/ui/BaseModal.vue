@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Icon } from '@/components/ui/icon'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-defineProps<{ title?: string; large?: boolean }>()
-const emit = defineEmits<{ (e: 'close'): void }>()
+defineProps<{ title?: string; large?: boolean }>();
+const emit = defineEmits<{ (e: 'close'): void }>();
 
 function onOpenChange(open: boolean): void {
-  if (!open) emit('close')
+  if (!open) emit('close');
 }
 </script>
 

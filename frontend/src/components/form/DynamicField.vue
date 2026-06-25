@@ -1,54 +1,54 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { ModuleField, RecordValue } from '@/types'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { controlClass, formFieldClass } from '@/lib/inputStyles'
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { ModuleField, RecordValue } from '@/types';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { controlClass, formFieldClass } from '@/lib/inputStyles';
 
 const props = defineProps<{
-  field: ModuleField
-  modelValue: RecordValue
-  error?: string
-}>()
-const emit = defineEmits<{ (e: 'update:modelValue', value: RecordValue): void }>()
+  field: ModuleField;
+  modelValue: RecordValue;
+  error?: string;
+}>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: RecordValue): void }>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const value = computed({
   get: () => props.modelValue,
   set: (v: RecordValue) => emit('update:modelValue', v),
-})
+});
 
 const multiValue = computed<string[]>({
   get: () => (Array.isArray(props.modelValue) ? (props.modelValue as string[]) : []),
   set: (v) => emit('update:modelValue', v),
-})
+});
 
 function emitValue(v: RecordValue): void {
-  emit('update:modelValue', v)
+  emit('update:modelValue', v);
 }
 
 function onTextUpdate(raw: string | number | undefined): void {
-  emitValue(raw === undefined ? '' : String(raw))
+  emitValue(raw === undefined ? '' : String(raw));
 }
 
 function onNumberUpdate(raw: string | number | undefined): void {
   if (raw === undefined || raw === '') {
-    emitValue(null)
-    return
+    emitValue(null);
+    return;
   }
-  emitValue(Number(raw))
+  emitValue(Number(raw));
 }
 
 function toggleMultiOption(opt: string, checked: boolean): void {
-  const current = multiValue.value
+  const current = multiValue.value;
   if (checked) {
-    if (!current.includes(opt)) multiValue.value = [...current, opt]
+    if (!current.includes(opt)) multiValue.value = [...current, opt];
   } else {
-    multiValue.value = current.filter((o) => o !== opt)
+    multiValue.value = current.filter((o) => o !== opt);
   }
 }
 </script>
@@ -96,10 +96,7 @@ function toggleMultiOption(opt: string, checked: boolean): void {
     />
 
     <label v-else-if="field.type === 'boolean'" class="flex cursor-pointer items-center gap-2 text-sm">
-      <Checkbox
-        :checked="!!value"
-        @update:checked="(v: boolean | 'indeterminate') => emitValue(v === true)"
-      />
+      <Checkbox :checked="!!value" @update:checked="(v: boolean | 'indeterminate') => emitValue(v === true)" />
       <span>{{ field.label }}</span>
     </label>
 
@@ -117,11 +114,7 @@ function toggleMultiOption(opt: string, checked: boolean): void {
       v-else-if="field.type === 'multiselect'"
       class="flex max-h-40 flex-col gap-2 overflow-y-auto rounded-lg border border-border/80 bg-muted/30 p-3.5"
     >
-      <label
-        v-for="opt in field.options ?? []"
-        :key="opt"
-        class="flex cursor-pointer items-center gap-2 text-sm"
-      >
+      <label v-for="opt in field.options ?? []" :key="opt" class="flex cursor-pointer items-center gap-2 text-sm">
         <Checkbox
           :checked="multiValue.includes(opt)"
           @update:checked="(v: boolean | 'indeterminate') => toggleMultiOption(opt, v === true)"

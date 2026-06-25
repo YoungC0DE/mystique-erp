@@ -3,10 +3,8 @@
 ## MVP — concluído / em produção no código
 
 - [x] Single-tenant (`company_id` e `companies` removidos; `is_admin`)
+- [x] Login como entrada da aplicação (`/`); aliases `/entrar`, `/login`
 - [x] Docker + Docker Compose
-- [x] Login (Passport) + registro controlado por env
-- [x] Admin bootstrap (`app:create-admin`) + primeiro usuário = Admin
-- [x] Landing pública: Home, Documentação, Entrar, Registrar
 - [x] Área autenticada sem menu Empresas
 - [x] Dropdown: Configurações (Admin), Perfil, Sair
 - [x] Usuários, roles, permissões CRUD, activity logs
@@ -16,7 +14,8 @@
 - [x] Módulo: conexão, colunas, `status_column`, status customizáveis, callback
 - [x] Board integrado: leitura direta da tabela externa por `id`
 - [x] Mudança de etapa via callback HTTP
-- [x] Documentação pública em `docs/`
+- [x] Admin bootstrap (`app:create-admin`)
+- [x] Documentação no README e pasta `docs/` do repositório
 - [x] Relatórios básicos (`reports` + UI)
 - [x] Dashboard (página inicial autenticada)
 - [x] Layout de campos (`detail_layout`, flags show/highlight)
@@ -32,9 +31,6 @@
 
 ## Em andamento / parcial
 
-- [ ] Home pública com fluxograma interativo (Home existe, fluxograma básico)
-- [ ] Documentação expandida (vídeos, mais exemplos)
-- [ ] Colunas Kanban totalmente customizáveis na UI (status sim; colunas físicas do board = status)
 - [ ] Cache e paginação otimizada para tabelas externas muito grandes
 
 ## Pós-MVP

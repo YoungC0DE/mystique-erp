@@ -1,22 +1,22 @@
-import Echo from 'laravel-echo'
-import Pusher from 'pusher-js'
-import { tokenStorage } from './tokenStorage'
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+import { tokenStorage } from './tokenStorage';
 
 declare global {
   interface Window {
-    Pusher: typeof Pusher
-    Echo?: Echo<'reverb'>
+    Pusher: typeof Pusher;
+    Echo?: Echo<'reverb'>;
   }
 }
 
-let echo: Echo<'reverb'> | null = null
+let echo: Echo<'reverb'> | null = null;
 
-const apiBase = import.meta.env.VITE_API_URL ?? '/api'
+const apiBase = import.meta.env.VITE_API_URL ?? '/api';
 
 export function initEcho(): Echo<'reverb'> {
-  if (echo) return echo
+  if (echo) return echo;
 
-  window.Pusher = Pusher
+  window.Pusher = Pusher;
 
   echo = new Echo({
     broadcaster: 'reverb',
@@ -33,18 +33,18 @@ export function initEcho(): Echo<'reverb'> {
         Accept: 'application/json',
       },
     },
-  })
+  });
 
-  window.Echo = echo
-  return echo
+  window.Echo = echo;
+  return echo;
 }
 
 export function getEcho(): Echo<'reverb'> {
-  return echo ?? initEcho()
+  return echo ?? initEcho();
 }
 
 export function disconnectEcho(): void {
-  echo?.disconnect()
-  echo = null
-  window.Echo = undefined
+  echo?.disconnect();
+  echo = null;
+  window.Echo = undefined;
 }

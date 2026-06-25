@@ -1,11 +1,11 @@
-import { createPinia, setActivePinia } from 'pinia'
-import { mount, flushPromises } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-import ModuleBoardPage from '@/pages/modules/ModuleBoardPage.vue'
-import { i18n } from '@/i18n'
-import { useAuthStore } from '@/stores/auth'
-import type { KanbanBoard, Module } from '@/types'
+import { createPinia, setActivePinia } from 'pinia';
+import { mount, flushPromises } from '@vue/test-utils';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createRouter, createMemoryHistory } from 'vue-router';
+import ModuleBoardPage from '@/pages/modules/ModuleBoardPage.vue';
+import { i18n } from '@/i18n';
+import { useAuthStore } from '@/stores/auth';
+import type { KanbanBoard, Module } from '@/types';
 
 vi.mock('@/services/echo', () => ({
   getEcho: () => ({
@@ -14,14 +14,14 @@ vi.mock('@/services/echo', () => ({
     }),
     leave: vi.fn(),
   }),
-}))
+}));
 
 vi.mock('@/composables/useToast', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
   }),
-}))
+}));
 
 const integratedModule: Module = {
   id: 'mod-1',
@@ -49,7 +49,7 @@ const integratedModule: Module = {
       visible: true,
     },
   ],
-}
+};
 
 const board: KanbanBoard = {
   columns: [
@@ -75,20 +75,20 @@ const board: KanbanBoard = {
       meta: { total: 0, per_page: 10, current_page: 1, last_page: 1 },
     },
   ],
-}
+};
 
 vi.mock('@/stores/modules', () => ({
   useModulesStore: () => ({
     findBySlug: vi.fn(() => ({ id: 'mod-1', slug: 'pedidos', name: 'Pedidos' })),
     loadAllowed: vi.fn().mockResolvedValue(undefined),
   }),
-}))
+}));
 
 vi.mock('@/services/modules.service', () => ({
   modulesService: {
     get: vi.fn(() => Promise.resolve(integratedModule)),
   },
-}))
+}));
 
 vi.mock('@/services/records.service', () => ({
   recordsService: {
@@ -99,14 +99,14 @@ vi.mock('@/services/records.service', () => ({
     update: vi.fn(),
     remove: vi.fn(),
   },
-}))
+}));
 
 describe('ModuleBoardPage', () => {
   beforeEach(() => {
-    localStorage.clear()
-    setActivePinia(createPinia())
+    localStorage.clear();
+    setActivePinia(createPinia());
 
-    const auth = useAuthStore()
+    const auth = useAuthStore();
     auth.user = {
       id: 'u-1',
       name: 'Rafael Silva',
@@ -114,8 +114,8 @@ describe('ModuleBoardPage', () => {
       is_admin: false,
       locale: 'pt-BR',
       permissions: ['read', 'create', 'update'],
-    }
-  })
+    };
+  });
 
   it('hides new record action and shows read-only hint for integrated modules', async () => {
     const router = createRouter({
@@ -124,20 +124,20 @@ describe('ModuleBoardPage', () => {
         { path: '/m/:slug', name: 'module', component: ModuleBoardPage, props: true },
         { path: '/dashboard', name: 'dashboard', component: { template: '<div />' } },
       ],
-    })
+    });
 
     const wrapper = mount(ModuleBoardPage, {
       props: { slug: 'pedidos' },
       global: { plugins: [router, i18n] },
-    })
+    });
 
-    await router.isReady()
-    await flushPromises()
+    await router.isReady();
+    await flushPromises();
 
-    const text = wrapper.text()
+    const text = wrapper.text();
 
-    expect(text).toContain('Pedidos')
-    expect(text).toContain('somente leitura')
-    expect(text).not.toContain('Novo registro')
-  })
-})
+    expect(text).toContain('Pedidos');
+    expect(text).toContain('somente leitura');
+    expect(text).not.toContain('Novo registro');
+  });
+});
