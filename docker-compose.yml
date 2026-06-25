@@ -6,6 +6,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
     depends_on:
       - mysql
       - redis
@@ -58,6 +59,7 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
     depends_on:
       - backend
       - redis
@@ -114,3 +116,4 @@ networks:
 
 volumes:
   mysql_data:
+  backend_vendor:
