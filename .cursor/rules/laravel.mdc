@@ -1,0 +1,103 @@
+---
+description: Laravel best practices, architecture, performance and security
+globs:
+  - "backend/**/*.php"
+alwaysApply: true
+---
+
+# Laravel Development Rules
+
+## Architecture
+
+- Follow Laravel conventions.
+- Prefer thin controllers.
+- Business logic must not live in controllers.
+- Use Actions/Services for complex operations.
+- Use Form Requests for validation.
+- Use Policies/Gates for authorization.
+- Use Events/Listeners when decoupling is useful.
+
+## Eloquent & Queries
+
+- Avoid N+1 queries; always check relationships before querying.
+- Prefer eager loading.
+- Do not use `Model::all()` on large tables.
+- Use pagination for lists.
+- Use chunk/cursor for batch processing.
+- Avoid loading unnecessary columns.
+
+Bad:
+
+```php
+User::all();
+
+foreach ($users as $user) {
+    echo $user->profile->name;
+}
+
+$orders = Order::get();
+foreach ($orders as $order) {
+    $order->items;
+}
+```
+
+Good:
+
+```php
+$users = User::with('profile')->paginate();
+
+User::select(['id', 'name'])->get();
+
+Order::with('items')->get();
+
+Model::chunk(500, function ($items) {
+    // ...
+});
+
+Model::cursor();
+```
+
+## Database
+
+- Always consider indexes when filtering, sorting, or joining frequently.
+- Avoid unnecessary queries, duplicated queries, and unnecessary joins.
+- Prefer query builder for complex queries.
+- Avoid raw SQL unless necessary.
+- Analyze slow queries.
+
+## Performance
+
+- Use cache for expensive queries, external API calls, and computed values (`Cache::remember()`).
+- Use queues for heavy operations: emails, imports, exports, notifications, integrations.
+- Avoid blocking requests.
+- Consider Redis for cache and queues.
+
+## Security
+
+- Never use `$request->all()` for persistence.
+- Use validated data.
+- Protect mass assignment.
+- Validate uploads.
+- Apply authorization rules.
+
+## API
+
+- Keep API responses consistent.
+- Use Laravel Resources.
+- Avoid exposing database models directly.
+- Use proper HTTP status codes.
+- Minimize payload size; avoid unnecessary relationships.
+- Paginate large responses.
+
+## Code Quality
+
+- Follow PSR-12.
+- Keep methods small.
+- Prefer dependency injection.
+- Write readable code over clever code.
+
+## Before changing code
+
+- Understand existing architecture.
+- Reuse existing patterns.
+- Avoid introducing unnecessary dependencies.

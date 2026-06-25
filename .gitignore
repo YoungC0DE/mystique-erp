@@ -1,0 +1,29 @@
+# Dependencies
+/backend/vendor
+/frontend/node_modules
+
+# Environment
+.env
+/backend/.env
+/frontend/.env
+
+# Build artifacts
+/frontend/dist
+/backend/public/build
+/backend/public/hot
+
+# Laravel
+/backend/storage/*.key
+/backend/bootstrap/cache/*.php
+
+# Logs
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

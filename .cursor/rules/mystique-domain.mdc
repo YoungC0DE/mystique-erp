@@ -1,0 +1,31 @@
+---
+description: Mystique CRM business rules, architecture and domain specification
+alwaysApply: true
+---
+
+# Mystique CRM — Domain Rules
+
+Before implementing features or changing behavior, read the relevant specs in `.cursor/docs/`.
+
+| Topic | File |
+|-------|------|
+| Product vision, single-tenant, UX | `.cursor/docs/vision.md` |
+| Modules, Kanban, integration | `.cursor/docs/modules.md` |
+| App DB vs external DB | `.cursor/docs/database.md` |
+| REST API endpoints | `.cursor/docs/api.md` |
+| External DB + callback flow | `.cursor/docs/integration.md` |
+| MVP status and roadmap | `.cursor/docs/roadmap.md` |
+
+## Non-negotiable invariants
+
+- **Single-tenant:** one installation = one organization. No `company_id`, no multi-empresa, no plan gating.
+- **Integrated modules:** operational data lives in the **client's external database**. The CRM reads it directly; integrated records are **read-only** for business fields.
+- **Stage changes only:** moving a Kanban card triggers an **HTTP callback** to the client's URL (`callback_url`, `callback_method`). The CRM does not write business data to the external table.
+- **External record key:** cards map to the **`id`** column (PK) of the external table.
+- **Column mapping:** each `module_fields.key` must match the external column name. `status_column` on the module maps Kanban stages via `module_kanban_statuses.external_value`.
+- **Admin:** instance admin uses `users.is_admin` (bootstrap via `app:create-admin` or first registered user). Connections (`/configuracoes`) are admin-only.
+- **Coding standards:** follow `.cursor/rules/laravel.mdc` (backend) and `.cursor/rules/vue-best-practices.md` (frontend).
+
+## When specs and code disagree
+
+Prefer aligning code with `.cursor/docs/` unless the user explicitly asks to change product behavior. If you find drift, flag it and update the docs in the same task.
